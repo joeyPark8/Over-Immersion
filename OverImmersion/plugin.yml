@@ -1,0 +1,6 @@
+name: OverImmersion
+version: 1.0
+main: overImmersion.Main
+
+commands:
+  oi:
