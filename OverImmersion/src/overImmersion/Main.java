@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -11,7 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
     boolean started = false, first = true;
-    Block lastBlock;
+    int count = 0;
+    Block lastBlock = null;
 
     @Override
     public void onEnable() {
@@ -41,30 +43,48 @@ public class Main extends JavaPlugin implements Listener {
                     started = false;
                 }
             }
+            else if (args[0].equalsIgnoreCase("clear")) {
+                lastBlock = null;
+            }
         }
         return true;
     }
 
     public void onBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
         if (started == true) {
             if (first == false) {
                 if (e.getBlock() == lastBlock) {
-
+                    count+=1;
+                }
+                else {
+                    count = 0;
                 }
             }
             lastBlock = e.getBlock();
+            first = false;
+            if (count == 3) {
+                player.getWorld().createExplosion(player.getLocation(), 20);
+            }
         }
     }
 
     public void onPlace(BlockPlaceEvent e) {
+        Player player = e.getPlayer();
         if (started == true) {
             if (first == false) {
                 if (e.getBlock() == lastBlock) {
-
+                    count+=1;
+                }
+                else {
+                    count = 0;
                 }
             }
             lastBlock = e.getBlock();
+            first = false;
+            if (count == 3) {
+                player.getWorld().createExplosion(player.getLocation(), 20);
+            }
         }
     }
-
 }
