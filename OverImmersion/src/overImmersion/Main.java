@@ -1,10 +1,12 @@
 package overImmersion;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -13,11 +15,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
     boolean started = false, first = true;
     int count = 0;
-    Block lastBlock = null;
+    Block lastBlock;
 
     @Override
     public void onEnable() {
         System.out.println("OverImmersion is activated");
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @Override
@@ -50,11 +53,12 @@ public class Main extends JavaPlugin implements Listener {
         return true;
     }
 
+    @EventHandler
     public void onBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
         if (started == true) {
             if (first == false) {
-                if (e.getBlock() == lastBlock) {
+                if (e.getBlock().getType() == lastBlock.getType()) {
                     count+=1;
                 }
                 else {
@@ -63,17 +67,19 @@ public class Main extends JavaPlugin implements Listener {
             }
             lastBlock = e.getBlock();
             first = false;
-            if (count == 3) {
+            if (count == 2) {
                 player.getWorld().createExplosion(player.getLocation(), 20);
+                player.sendMessage("Don't immerse");
             }
         }
     }
 
+    @EventHandler
     public void onPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
         if (started == true) {
             if (first == false) {
-                if (e.getBlock() == lastBlock) {
+                if (e.getBlock().getType() == lastBlock.getType()) {
                     count+=1;
                 }
                 else {
@@ -82,7 +88,7 @@ public class Main extends JavaPlugin implements Listener {
             }
             lastBlock = e.getBlock();
             first = false;
-            if (count == 3) {
+            if (count == 2) {
                 player.getWorld().createExplosion(player.getLocation(), 20);
             }
         }
